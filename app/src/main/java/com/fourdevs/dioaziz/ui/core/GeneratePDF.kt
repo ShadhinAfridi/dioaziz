@@ -103,7 +103,7 @@ class GeneratePDF @Inject constructor(
                 Triple(passportData.applicantMobileNo, 90f to 443.5f, 10f),
                 Triple(passportData.personOneName, 325f to 573.5f, 9f),
                 Triple(passportData.personOneRelation, 333f to 588f, 9f),
-                Triple(passportData.personOneRelation, 350f to 603.5f, 9f),
+                Triple(passportData.personOneMobileNo, 350f to 603.5f, 9f),
                 Triple(passportData.personTwoName, 325f to 633.5f, 9f),
                 Triple(passportData.personTwoRelation, 333f to 648f, 9f),
                 Triple(passportData.personTwoMobileNo, 350f to 663.5f, 9f)

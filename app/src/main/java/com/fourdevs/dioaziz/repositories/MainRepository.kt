@@ -1,11 +1,9 @@
 package com.fourdevs.dioaziz.repositories
 
-import android.content.Context
 import com.fourdevs.dioaziz.room.ApplicantDao
 import com.fourdevs.dioaziz.ui.core.GeneratePDF
 import com.fourdevs.dioaziz.ui.data.PassportData
 import com.fourdevs.dioaziz.utils.CustomDate
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -29,6 +27,23 @@ class MainRepository @Inject constructor(
         banglaDate: (String) -> Unit
     ) {
         banglaDate(customDate.main(timestamp))
+    }
+
+    fun convertIfNeeded(value: String): String {
+        return if (containsEnglishDigits(value)) {
+            convertEnglishToBanglaDigits(value)
+        } else {
+            value
+        }
+    }
+
+    private fun containsEnglishDigits(input: String): Boolean {
+        val regex = Regex("[0-9]")
+        return regex.containsMatchIn(input)
+    }
+
+    private fun convertEnglishToBanglaDigits(englishNumber: String): String {
+        return customDate.convertEnglishToBanglaDigits(englishNumber)
     }
 
     suspend fun insert(passportData: PassportData) {

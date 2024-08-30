@@ -56,6 +56,7 @@ fun ApplicationFields(
                 value = pvrNo,
                 onChange = { viewModel.updatePvrNo(it) },
                 localFocusManager = localFocusManager,
+                keyboardType = KeyboardType.Number
             )
             CustomInputField(
                 text = Constants.KEY_DATE_BN,
@@ -92,6 +93,7 @@ fun ApplicationFields(
                 value = enrollId,
                 onChange = { viewModel.updateEnrollId(it) },
                 localFocusManager = localFocusManager,
+                keyboardType = KeyboardType.Number
             )
         }
     }
@@ -111,6 +113,7 @@ fun PersonalFields(
     val mother by viewModel.mother.collectAsState("")
     val isClicked by viewModel.isPersonalClicked.collectAsState()
     val isError by viewModel.isPersonalError.collectAsState()
+    val occupationList by viewModel.occupationList.collectAsState()
 
     Divider(
         title = Constants.KEY_TITLE_PERSONAL_INFO_BN,
@@ -171,8 +174,17 @@ fun PersonalFields(
             CustomInputField(
                 text = Constants.KEY_OCCUPATION_BN,
                 value = occupation,
-                onChange = { viewModel.updateOccupation(it) },
+                onChange = {
+                    viewModel.updateOccupation(it)
+                    viewModel.updateOccupationList(it)
+                },
                 localFocusManager = localFocusManager,
+                supportingText = {
+                    CustomDropDownItem(occupationList) {
+                        viewModel.updateOccupation(it)
+                        viewModel.updateOccupationList("")
+                    }
+                }
             )
             CustomInputField(
                 text = Constants.KEY_MOBILE_NO_BN,
@@ -199,6 +211,7 @@ fun PermanentAddressFields(
     val zillaList by viewModel.zillaList.collectAsState()
     val thanaList by viewModel.thanaList.collectAsState()
     val postOfficeList by viewModel.postList.collectAsState()
+    val villageList by viewModel.villageList.collectAsState()
 
 
     Divider(
@@ -266,8 +279,22 @@ fun PermanentAddressFields(
             CustomInputField(
                 text = Constants.KEY_PERMANENT_ADDRESS_BN,
                 value = permanentAddress,
-                onChange = { viewModel.updatePermanentAddress(it) },
+                onChange = {
+                    viewModel.updatePermanentAddress(it)
+                    viewModel.updateVillageList(
+                        it,
+                        post = permanentPost,
+                        thana = permanentThana,
+                        zilla = permanentZilla
+                    )
+                },
                 localFocusManager = localFocusManager,
+                supportingText = {
+                    CustomDropDownItem(villageList) {
+                        viewModel.updatePermanentAddress(it)
+                        viewModel.updateVillageList("", "", "", "")
+                    }
+                }
             )
 
         }
@@ -290,6 +317,7 @@ fun PresentAddressFields(
     val postOfficeList by viewModel.postList.collectAsState()
     val zillaList by viewModel.zillaList.collectAsState()
     val thanaList by viewModel.thanaList.collectAsState()
+    val villageList by viewModel.villageList.collectAsState()
 
 
     Divider(
@@ -359,13 +387,27 @@ fun PresentAddressFields(
                         viewModel.updatePresentPost(it)
                         viewModel.updatePostList("", "", "")
                     }
-                }
+                },
             )
             CustomInputField(
                 text = Constants.KEY_PRESENT_ADDRESS_BN,
                 value = presentAddress,
-                onChange = { viewModel.updatePresentAddress(it) },
+                onChange = {
+                    viewModel.updatePresentAddress(it)
+                    viewModel.updateVillageList(
+                        it,
+                        post = presentPost,
+                        thana = presentThana,
+                        zilla = presentZilla
+                    )
+                },
                 localFocusManager = localFocusManager,
+                supportingText = {
+                    CustomDropDownItem(villageList) {
+                        viewModel.updatePresentAddress(it)
+                        viewModel.updateVillageList("", "", "", "")
+                    }
+                }
             )
 
 

@@ -60,7 +60,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.fourdevs.dioaziz.R
 import com.fourdevs.dioaziz.ui.theme.Green80
 import com.fourdevs.dioaziz.ui.theme.Pink80

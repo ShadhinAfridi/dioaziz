@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.fourdevs.dioaziz.repositories.MainRepository
 import com.fourdevs.dioaziz.ui.data.PassportData
 import com.fourdevs.dioaziz.ui.data.addresses
+import com.fourdevs.dioaziz.ui.data.occupations
 import com.fourdevs.dioaziz.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -107,6 +108,12 @@ class MainViewModel @Inject constructor(
     private val _postList = MutableStateFlow<List<String>>(emptyList())
     val postList: StateFlow<List<String>> = _postList
 
+    private val _villageList = MutableStateFlow<List<String>>(emptyList())
+    val villageList: StateFlow<List<String>> = _villageList
+
+    private val _occupationList = MutableStateFlow<List<String>>(emptyList())
+    val occupationList: StateFlow<List<String>> = _occupationList
+
     private val _isApplicationClicked = MutableStateFlow(true)
     val isApplicationClicked: StateFlow<Boolean> = _isApplicationClicked
 
@@ -161,7 +168,7 @@ class MainViewModel @Inject constructor(
 
     // Update functions
     fun updatePvrNo(value: String) {
-        _pvrNo.value = value
+        _pvrNo.value = convertIfNeeded(value)
     }
 
     fun updateDate(value: String) {
@@ -177,11 +184,11 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateEnrollId(value: String) {
-        _enrollId.value = value
+        _enrollId.value = convertIfNeeded(value)
     }
 
     fun updateNidBrcNo(value: String) {
-        _nidBrcNo.value = value
+        _nidBrcNo.value = convertIfNeeded(value)
     }
 
     fun updateFather(value: String) {
@@ -233,7 +240,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateApplicantMobileNo(value: String) {
-        _applicantMobileNo.value = value
+        _applicantMobileNo.value = convertIfNeeded(value)
     }
 
     fun updatePersonOneName(value: String) {
@@ -245,7 +252,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updatePersonOneMobileNo(value: String) {
-        _personOneMobileNo.value = value
+        _personOneMobileNo.value = convertIfNeeded(value)
     }
 
     fun updatePersonTwoName(value: String) {
@@ -257,7 +264,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updatePersonTwoMobileNo(value: String) {
-        _personTwoMobileNo.value = value
+        _personTwoMobileNo.value = convertIfNeeded(value)
     }
 
     private fun updatePickedDate(value: String) {
@@ -338,12 +345,9 @@ class MainViewModel @Inject constructor(
 
     fun updateZillaList(value: String) {
         if (value.isNotEmpty()) {
-            _zillaList.value = addresses
-                .filter { address ->
-                    address.zilla.contains(value, ignoreCase = true)
-                }
-                .map { address -> address.zilla }
-                .distinct()
+            _zillaList.value = addresses.filter { address ->
+                address.zilla.contains(value, ignoreCase = true)
+            }.map { address -> address.zilla }.distinct().take(5)
         } else {
             _zillaList.value = emptyList()
         }
@@ -351,32 +355,59 @@ class MainViewModel @Inject constructor(
 
     fun updateThanaList(value: String, zilla: String) {
         if (value.isNotEmpty()) {
-            _thanaList.value = addresses
-                .filter { address ->
-                    address.zilla.equals(zilla, ignoreCase = true) &&  // Match zilla name
-                            address.thana.contains(value, ignoreCase = true)  // Match thana name
-                }
-                .map { address -> address.thana }
-                .distinct()
+            _thanaList.value = addresses.filter { address ->
+                address.zilla.equals(zilla, ignoreCase = true) &&  // Match zilla name
+                        address.thana.contains(value, ignoreCase = true)  // Match thana name
+            }.map { address -> address.thana }.distinct().take(5)
         } else {
             _thanaList.value = emptyList()
         }
     }
 
-    fun updatePostList(value: String, thana: String, zilla: String) {
+    fun updatePostList(
+        value: String,
+        thana: String,
+        zilla: String
+    ) {
         if (value.isNotEmpty()) {
-            _postList.value = addresses
-                .filter { address ->
-                    address.zilla.equals(zilla, ignoreCase = true) &&  // Match zilla name
-                            address.thana.equals(thana, ignoreCase = true) &&  // Match thana name
-                            address.postOffice.contains(value, ignoreCase = true)
-                }
-                .map { address -> address.postOffice }
-                .distinct()
+            _postList.value = addresses.filter { address ->
+                address.zilla.equals(zilla, ignoreCase = true) &&  // Match zilla name
+                        address.thana.equals(thana, ignoreCase = true) &&  // Match thana name
+                        address.postOffice.contains(value, ignoreCase = true)
+            }.map { address -> address.postOffice }.distinct().take(5)
         } else {
             _postList.value = emptyList()
         }
     }
+
+    fun updateVillageList(
+        value: String,
+        post: String,
+        thana: String,
+        zilla: String
+    ) {
+        if (value.isNotEmpty()) {
+            _villageList.value = addresses.filter { address ->
+                address.zilla.equals(zilla, ignoreCase = true) &&  // Match zilla name
+                        address.thana.equals(thana, ignoreCase = true) &&  // Match thana name
+                        address.postOffice.equals(post, ignoreCase = true) &&
+                        address.village.contains(value, ignoreCase = true)
+            }.map { address -> address.postOffice }.distinct().take(5)
+        } else {
+            _villageList.value = emptyList()
+        }
+    }
+
+    fun updateOccupationList(value: String) {
+        if (value.isNotEmpty()) {
+            _occupationList.value = occupations.filter { occupation ->
+                occupation.contains(value, ignoreCase = true)
+            }
+        } else {
+            _occupationList.value = emptyList()
+        }
+    }
+
 
     fun clickedDropdownState(clickedDropdown: String) {
         val dropdownMap = mapOf(
@@ -395,74 +426,31 @@ class MainViewModel @Inject constructor(
 
 
     private fun validateApplicationData(): Boolean {
-        return pvrNo.value.isEmpty() ||
-                date.value.isEmpty() ||
-                endDate.value.isEmpty() ||
-                enrollId.value.isEmpty()
+        return pvrNo.value.isEmpty() || date.value.isEmpty() || endDate.value.isEmpty() || enrollId.value.isEmpty()
     }
 
     private fun validatePersonalData(): Boolean {
-        return applicantName.value.isEmpty() ||
-                nidBrcNo.value.isEmpty() ||
-                father.value.isEmpty() ||
-                mother.value.isEmpty() ||
-                dob.value.isEmpty() ||
-                occupation.value.isEmpty() ||
-                applicantMobileNo.value.isEmpty()
+        return applicantName.value.isEmpty() || nidBrcNo.value.isEmpty() || father.value.isEmpty() || mother.value.isEmpty() || dob.value.isEmpty() || occupation.value.isEmpty() || applicantMobileNo.value.isEmpty()
     }
 
     private fun validatePermanentAddressData(): Boolean {
-        return permanentAddress.value.isEmpty() ||
-                permanentPost.value.isEmpty() ||
-                permanentThana.value.isEmpty() ||
-                permanentZilla.value.isEmpty()
+        return permanentAddress.value.isEmpty() || permanentPost.value.isEmpty() || permanentThana.value.isEmpty() || permanentZilla.value.isEmpty()
     }
 
     private fun validatePresentAddressData(): Boolean {
-        return presentAddress.value.isEmpty() ||
-                presentPost.value.isEmpty() ||
-                presentThana.value.isEmpty() ||
-                presentZilla.value.isEmpty()
+        return presentAddress.value.isEmpty() || presentPost.value.isEmpty() || presentThana.value.isEmpty() || presentZilla.value.isEmpty()
     }
 
     private fun validatePersonOne(): Boolean {
-        return personOneName.value.isEmpty() ||
-                personOneRelation.value.isEmpty() ||
-                personOneMobileNo.value.isEmpty()
+        return personOneName.value.isEmpty() || personOneRelation.value.isEmpty() || personOneMobileNo.value.isEmpty()
     }
 
     private fun validatePersonTwoData(): Boolean {
-        return personTwoName.value.isEmpty() ||
-                personTwoRelation.value.isEmpty() ||
-                personTwoMobileNo.value.isEmpty()
+        return personTwoName.value.isEmpty() || personTwoRelation.value.isEmpty() || personTwoMobileNo.value.isEmpty()
     }
 
     private fun validatePassportData(passportData: PassportData): Boolean {
-        return passportData.pvrNo.isNotEmpty() &&
-                passportData.date.isNotEmpty() &&
-                passportData.endDate.isNotEmpty() &&
-                passportData.applicantName.isNotEmpty() &&
-                passportData.enrollId.isNotEmpty() &&
-                passportData.nidBrcNo.isNotEmpty() &&
-                passportData.father.isNotEmpty() &&
-                passportData.mother.isNotEmpty() &&
-                passportData.dob.isNotEmpty() &&
-                passportData.occupation.isNotEmpty() &&
-                passportData.permanentAddress.isNotEmpty() &&
-                passportData.permanentPost.isNotEmpty() &&
-                passportData.permanentThana.isNotEmpty() &&
-                passportData.permanentZilla.isNotEmpty() &&
-                passportData.presentAddress.isNotEmpty() &&
-                passportData.presentPost.isNotEmpty() &&
-                passportData.presentThana.isNotEmpty() &&
-                passportData.presentZilla.isNotEmpty() &&
-                passportData.applicantMobileNo.isNotEmpty() &&
-                passportData.personOneName.isNotEmpty() &&
-                passportData.personOneRelation.isNotEmpty() &&
-                passportData.personOneMobileNo.isNotEmpty() &&
-                passportData.personTwoName.isNotEmpty() &&
-                passportData.personTwoRelation.isNotEmpty() &&
-                passportData.personTwoMobileNo.isNotEmpty()
+        return passportData.pvrNo.isNotEmpty() && passportData.date.isNotEmpty() && passportData.endDate.isNotEmpty() && passportData.applicantName.isNotEmpty() && passportData.enrollId.isNotEmpty() && passportData.nidBrcNo.isNotEmpty() && passportData.father.isNotEmpty() && passportData.mother.isNotEmpty() && passportData.dob.isNotEmpty() && passportData.occupation.isNotEmpty() && passportData.permanentAddress.isNotEmpty() && passportData.permanentPost.isNotEmpty() && passportData.permanentThana.isNotEmpty() && passportData.permanentZilla.isNotEmpty() && passportData.presentAddress.isNotEmpty() && passportData.presentPost.isNotEmpty() && passportData.presentThana.isNotEmpty() && passportData.presentZilla.isNotEmpty() && passportData.applicantMobileNo.isNotEmpty() && passportData.personOneName.isNotEmpty() && passportData.personOneRelation.isNotEmpty() && passportData.personOneMobileNo.isNotEmpty() && passportData.personTwoName.isNotEmpty() && passportData.personTwoRelation.isNotEmpty() && passportData.personTwoMobileNo.isNotEmpty()
     }
 
     private fun validateAllFields(): Boolean {
@@ -485,6 +473,10 @@ class MainViewModel @Inject constructor(
             }
         }
         return true
+    }
+
+    private fun convertIfNeeded(value: String): String {
+        return repository.convertIfNeeded(value)
     }
 
     fun savePassportData() {
@@ -546,7 +538,7 @@ class MainViewModel @Inject constructor(
 
     private fun currentDate() {
         repository.changeDateFormat(System.currentTimeMillis()) {
-            updateDate(it)
+            updateEndDate(it)
         }
     }
 
@@ -560,6 +552,7 @@ class MainViewModel @Inject constructor(
     private fun clearPersonOneFields() {
         updatePersonOneName("")
         updatePersonOneRelation("")
+        updatePersonOneMobileNo("")
     }
 
     private fun clearPersonTwoFields() {
@@ -599,6 +592,7 @@ class MainViewModel @Inject constructor(
         if (fatherCheckedState.value) {
             updatePersonOneName(father.value)
             updatePersonOneRelation(Constants.KEY_FATHER_BN)
+            updatePersonOneMobileNo(applicantMobileNo.value)
         } else {
             clearPersonOneFields()
         }

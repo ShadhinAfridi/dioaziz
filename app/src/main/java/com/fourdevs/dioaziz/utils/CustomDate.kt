@@ -8,7 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CustomDate @Inject constructor() {
-    private fun convertEnglishToBanglaDigits(englishNumber: String): String {
+    fun convertEnglishToBanglaDigits(englishNumber: String): String {
         val banglaDigits = mapOf(
             '0' to '০',
             '1' to '১',

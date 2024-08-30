@@ -36,6 +36,7 @@ fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
     val openDialog by viewModel.openDialog.collectAsState()
     val isError by viewModel.isError.collectAsState()
     val permanentAddress by viewModel.permanentAddress.collectAsState("")
+    val applicantMobileNo by viewModel.applicantMobileNo.collectAsState("")
     val permanentPost by viewModel.permanentPost.collectAsState("")
     val permanentThana by viewModel.permanentThana.collectAsState("")
     val permanentZilla by viewModel.permanentZilla.collectAsState("")
@@ -51,7 +52,8 @@ fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
         permanentThana,
         permanentZilla,
         father,
-        mother
+        mother,
+        applicantMobileNo
     ) {
         viewModel.updateCheckData()
     }
