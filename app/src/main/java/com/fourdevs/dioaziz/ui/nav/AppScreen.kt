@@ -5,5 +5,6 @@ enum class AppScreen(override val route: String) : Destinations {
     Application("application"),
     History("history"),
     Settings("settings"),
-    MainNav("main"); // Parent NavGraph route
+    MainNav("main"),
+    Share("Share")// Parent NavGraph route
 }

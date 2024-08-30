@@ -1,6 +1,7 @@
 package com.fourdevs.dioaziz.utils
 
 object Constants {
+    const val KEY_APP_NAME = "Dio Aziz Error"
     const val KEY_HOME_NAME = "ডিআইও আজিজ"
     const val KEY_DB = "DioAzizDb"
     const val KEY_BRANCH_BN = "শাখা"
@@ -40,6 +41,7 @@ object Constants {
     const val KEY_HISTORY_BN = "পূর্বের আবেদন"
     const val KEY_EDIT_BN = "এডিট করুন"
     const val KEY_SETTINGS_BN = "সেটিংস"
+    const val KEY_PREVIEW_BN = "আবেদনের অবস্থা"
 
     const val KEY_TITLE_PERSONAL_INFO_BN = "ব্যাক্তিগত তথ্য"
     const val KEY_TITLE_APPLICATION_INFO_BN = "আবেদনের তথ্য"
@@ -49,7 +51,8 @@ object Constants {
     const val KEY_TITLE_IDENTIFY_TWO_INFO_BN = "সনাক্তকারীর ২য় ব্যাক্তির তথ্য"
 
     const val KEY_ERROR_MESSAGE_BN = "অনুগ্রহ করে সকল তথ্য দিন।"
-
+    const val KEY_SHARE_BN = "শেয়ার করুন"
+    const val KEY_VIEW_BN = "দেখুন"
 
     const val KEY_APPLICATION = "Application"
     const val KEY_PERSONAL = "Personal"
@@ -57,4 +60,6 @@ object Constants {
     const val KEY_PRESENT_ADDRESS = "PresentAddress"
     const val KEY_PERSON_ONE = "PersonOne"
     const val KEY_PERSON_TWO = "PersonTwo"
+    const val KEY_LOG_MESSAGE = "No Application Found to open this PDF"
+    const val KEY_FILE_EXISTS = "File exists on "
 }

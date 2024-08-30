@@ -78,6 +78,11 @@ fun App(viewModel: MainViewModel) {
             destinationNow = AppScreen.Settings.route
         }
 
+        AppScreen.Share.route -> {
+            title = Constants.KEY_PREVIEW_BN
+            destinationNow = AppScreen.Share.route
+        }
+
         else -> {
             destinationNow = "back"
         }

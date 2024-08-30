@@ -1,5 +1,8 @@
 package com.fourdevs.dioaziz.viewmodels
 
+import android.graphics.Bitmap
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fourdevs.dioaziz.repositories.MainRepository
@@ -11,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -98,6 +102,12 @@ class MainViewModel @Inject constructor(
 
     private val _pickedDateFieldName = MutableStateFlow("")
     val pickedDateFieldName: StateFlow<String> = _pickedDateFieldName
+
+    private val _filePath = MutableStateFlow("")
+    val filePath: StateFlow<String> = _filePath
+
+    private val _imageBitmap = MutableStateFlow<Bitmap?>(null)
+    val imageBitmap: StateFlow<Bitmap?> = _imageBitmap
 
     private val _zillaList = MutableStateFlow<List<String>>(emptyList())
     val zillaList: StateFlow<List<String>> = _zillaList
@@ -515,11 +525,16 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 if (validatePassportData(passportData)) {
-                    repository.savePassportData(passportData) {
-                        it?.let {
+                    repository.savePassportData(passportData, { bitmap ->
+                        _imageBitmap.value = bitmap
+                    }, { newPassportData ->
+                        newPassportData?.let {
                             insert(passportData)
+                            newPassportData.fileName?.let { fileName ->
+                                _filePath.value = fileName
+                            }
                         }
-                    }
+                    })
                 } else {
                     updateError(true)
                 }
@@ -580,6 +595,40 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun resetAllValues() {
+        _pvrNo.value = ""
+        _date.value = ""
+        _filePath.value = ""
+        _endDate.value = ""
+        _applicantName.value = ""
+        _enrollId.value = ""
+        _nidBrcNo.value = ""
+        _father.value = ""
+        _mother.value = ""
+        _dob.value = ""
+        _occupation.value = ""
+        _permanentAddress.value = ""
+        _permanentPost.value = ""
+        _permanentThana.value = ""
+        _permanentZilla.value = ""
+        _presentAddress.value = ""
+        _presentPost.value = ""
+        _presentThana.value = ""
+        _presentZilla.value = ""
+        _applicantMobileNo.value = ""
+        _personOneName.value = ""
+        _personOneRelation.value = ""
+        _personOneMobileNo.value = ""
+        _personTwoName.value = ""
+        _personTwoRelation.value = ""
+        _personTwoMobileNo.value = ""
+        _pickedDate.value = ""
+        _pickedDateFieldName.value = ""
+        _imageBitmap.value = null
+        _filePath.value = ""
+        _isApplicationClicked.value = true
+    }
+
     fun updateCheckData() {
         if (addressCheckedState.value) {
             updatePresentAddress(permanentAddress.value)
@@ -602,6 +651,15 @@ class MainViewModel @Inject constructor(
         } else {
             clearPersonTwoFields()
         }
+    }
+
+    fun openPdfFile(filePath: String) {
+        repository.openPdfFile(filePath)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    fun sharePdfFile(filePath: String) {
+        repository.sharePdfFile(filePath)
     }
 
     init {

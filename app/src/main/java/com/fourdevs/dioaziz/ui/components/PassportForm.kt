@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.fourdevs.dioaziz.ui.nav.AppScreen
 import com.fourdevs.dioaziz.utils.Constants
 import com.fourdevs.dioaziz.viewmodels.MainViewModel
 
@@ -42,6 +43,7 @@ fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
     val permanentZilla by viewModel.permanentZilla.collectAsState("")
     val father by viewModel.father.collectAsState("")
     val mother by viewModel.mother.collectAsState("")
+    val filePath by viewModel.filePath.collectAsState()
 
     LaunchedEffect(
         addressChecked,
@@ -115,6 +117,7 @@ fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
                 .align(Alignment.BottomCenter)
         ) {
             viewModel.savePassportData()
+            navController.navigate(AppScreen.Share.route)
         }
     }
 }

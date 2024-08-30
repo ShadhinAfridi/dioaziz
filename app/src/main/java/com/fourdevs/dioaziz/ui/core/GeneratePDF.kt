@@ -1,5 +1,6 @@
 package com.fourdevs.dioaziz.ui.core
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -9,16 +10,19 @@ import android.graphics.Typeface
 import android.graphics.drawable.Icon
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfRenderer
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.service.chooser.ChooserAction
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import com.fourdevs.dioaziz.R
 import com.fourdevs.dioaziz.ui.data.PassportData
+import com.fourdevs.dioaziz.utils.Constants
 import com.fourdevs.dioaziz.utils.CustomDate
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -33,7 +37,8 @@ class GeneratePDF @Inject constructor(
 
     fun editAndGeneratePDF(
         passportData: PassportData,
-        newPassportData: (PassportData?) -> Unit
+        newPassportData: (PassportData?) -> Unit,
+        imageBitmap: (Bitmap?) -> Unit
     ) {
         // Open the PDF file from the raw resources
         val pdfFile = File(context.filesDir, "sample_pdf.pdf")
@@ -122,7 +127,11 @@ class GeneratePDF @Inject constructor(
                 )
             }
             pdfDocument.finishPage(pdfPage)
+            if (i == 0) {
+                imageBitmap(bitmap)
+            }
         }
+
 
         try {
             val directory = File(
@@ -135,7 +144,7 @@ class GeneratePDF @Inject constructor(
             }
             val file = File(directory, "${passportData.enrollId}.pdf")
 
-            if(!file.exists()){
+            if (!file.exists()) {
                 pdfDocument.writeTo(FileOutputStream(file))
                 Toast.makeText(context, file.absolutePath, Toast.LENGTH_SHORT).show()
                 val newData = passportData.copy(
@@ -143,7 +152,8 @@ class GeneratePDF @Inject constructor(
                 )
                 newPassportData(newData)
             } else {
-                Toast.makeText(context, "File exists on "+file.absolutePath, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, Constants.KEY_FILE_EXISTS + file.absolutePath, Toast.LENGTH_SHORT)
+                    .show()
             }
 
         } catch (e: Exception) {
@@ -204,6 +214,27 @@ class GeneratePDF @Inject constructor(
 
         shareIntent.putExtra(Intent.EXTRA_CHOOSER_CUSTOM_ACTIONS, customActions)
         context.startActivity(shareIntent)
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    fun openPdfFile(file: File) {
+        val uri: Uri =
+            FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.provider",
+                file
+            )
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/pdf")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        } else {
+            Log.d(Constants.KEY_APP_NAME, Constants.KEY_LOG_MESSAGE)
+        }
     }
 
 }

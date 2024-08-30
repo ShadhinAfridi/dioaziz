@@ -1,7 +1,6 @@
 package com.fourdevs.dioaziz.ui.nav
 
 import android.annotation.SuppressLint
-import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -10,6 +9,7 @@ import com.fourdevs.dioaziz.ui.components.History
 import com.fourdevs.dioaziz.ui.components.Home
 import com.fourdevs.dioaziz.ui.components.PassportForm
 import com.fourdevs.dioaziz.ui.components.Settings
+import com.fourdevs.dioaziz.ui.components.ShareScreen
 import com.fourdevs.dioaziz.viewmodels.MainViewModel
 
 @SuppressLint("ComposableNavGraphInComposeScope")
@@ -34,6 +34,9 @@ fun NavGraphBuilder.mainNavGraph(
         }
         composable(AppScreen.Settings.route) {
             Settings(navController, viewModel)
+        }
+        composable(AppScreen.Share.route) {
+            ShareScreen(navController, viewModel)
         }
     }
 }
