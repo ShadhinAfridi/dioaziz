@@ -3,13 +3,14 @@ package com.fourdevs.dioaziz.repositories
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Environment
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.fourdevs.dioaziz.room.ApplicantDao
 import com.fourdevs.dioaziz.ui.core.GeneratePDF
+import com.fourdevs.dioaziz.ui.data.DataStoreManager
 import com.fourdevs.dioaziz.ui.data.PassportData
 import com.fourdevs.dioaziz.utils.CustomDate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
@@ -19,6 +20,7 @@ class MainRepository @Inject constructor(
     private val generatePDF: GeneratePDF,
     private val customDate: CustomDate,
     private val applicantDao: ApplicantDao,
+    private val dataStoreManager: DataStoreManager
 ) {
     fun savePassportData(
         passportData: PassportData,
@@ -58,7 +60,6 @@ class MainRepository @Inject constructor(
             "DioAziz"
         )
         val file = File(directory, filePath)
-        Log.d("Afridi-Repo", file.absolutePath)
         return file
     }
 
@@ -67,7 +68,6 @@ class MainRepository @Inject constructor(
         generatePDF.openPdfFile(file)
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     fun sharePdfFile(filePath: String) {
         val file = getFile(filePath)
         generatePDF.sendFile(file)
@@ -90,4 +90,13 @@ class MainRepository @Inject constructor(
             applicantDao.getAll()
         }
     }
+
+    suspend fun putStringInDataStore(key: String, value: String) {
+        dataStoreManager.putString(key, value)
+    }
+
+    fun getStringFromDataStore(key: String): Flow<String?> {
+        return dataStoreManager.getString(key)
+    }
+
 }

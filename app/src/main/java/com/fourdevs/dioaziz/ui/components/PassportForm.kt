@@ -69,6 +69,12 @@ fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
         viewModel.updateError(false)
     }
 
+    if(filePath.isNotEmpty()) {
+        LaunchedEffect(filePath) {
+            navController.navigate(AppScreen.Share.route)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -117,7 +123,6 @@ fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
                 .align(Alignment.BottomCenter)
         ) {
             viewModel.savePassportData()
-            navController.navigate(AppScreen.Share.route)
         }
     }
 }

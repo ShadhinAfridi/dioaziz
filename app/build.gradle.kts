@@ -62,6 +62,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    //Data Store
+    implementation(libs.androidx.datastore.preferences)
+
     // hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.runtime.livedata)

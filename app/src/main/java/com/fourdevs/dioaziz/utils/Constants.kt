@@ -1,6 +1,7 @@
 package com.fourdevs.dioaziz.utils
 
 object Constants {
+    const val KEY_DATASTORE_NAME = "user_preferences"
     const val KEY_APP_NAME = "Dio Aziz Error"
     const val KEY_HOME_NAME = "ডিআইও আজিজ"
     const val KEY_DB = "DioAzizDb"

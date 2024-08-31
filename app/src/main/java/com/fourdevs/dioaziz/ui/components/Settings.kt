@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,10 +21,11 @@ import com.fourdevs.dioaziz.viewmodels.MainViewModel
 
 @Composable
 fun Settings(navController: NavHostController, viewModel: MainViewModel) {
-    var name by rememberSaveable { mutableStateOf("") }
-    var branch by rememberSaveable { mutableStateOf("") }
     val localFocusManager = LocalFocusManager.current
     val isError by viewModel.isError.collectAsState()
+    val investigationsOfficerName by viewModel.investigationsOfficerName.collectAsState()
+    val branchName by viewModel.branchName.collectAsState()
+
 
     Column(
         verticalArrangement = Arrangement.Top,
@@ -34,22 +36,22 @@ fun Settings(navController: NavHostController, viewModel: MainViewModel) {
     ) {
         CustomInputField(
             text = Constants.KEY_INVESTIGATION_OFFICER_BN,
-            value = name,
-            onChange = { name = it },
+            value = investigationsOfficerName,
+            onChange = { viewModel.updateInvestigationsOfficerName(it) },
             localFocusManager = localFocusManager,
             isError = isError
         )
 
         CustomInputField(
             text = Constants.KEY_BRANCH_BN,
-            value = branch,
-            onChange = { branch = it },
+            value = branchName,
+            onChange = { viewModel.updateBranchName(it) },
             localFocusManager = localFocusManager,
             isError = isError
         )
 
         CustomButton(text = Constants.KEY_SAVE_BN) {
-
+            viewModel.updateSettingData(investigationsOfficerName, branchName)
         }
     }
 

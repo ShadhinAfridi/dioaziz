@@ -1,9 +1,6 @@
 package com.fourdevs.dioaziz.viewmodels
 
 import android.graphics.Bitmap
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fourdevs.dioaziz.repositories.MainRepository
@@ -21,6 +18,12 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
+
+    private val _investigationsOfficerName = MutableStateFlow("")
+    val investigationsOfficerName: StateFlow<String> = _investigationsOfficerName
+
+    private val _branchName = MutableStateFlow("")
+    val branchName: StateFlow<String> = _branchName
 
     private val _pvrNo = MutableStateFlow("")
     val pvrNo: StateFlow<String> = _pvrNo
@@ -174,6 +177,9 @@ class MainViewModel @Inject constructor(
 
     private val _isPersonTwoError = MutableStateFlow(false)
     val isPersonTwoError: StateFlow<Boolean> = _isPersonTwoError
+
+    private val _filledFormList = MutableStateFlow<List<PassportData>>(emptyList())
+    val filledFormList: StateFlow<List<PassportData>> = _filledFormList
 
 
     // Update functions
@@ -375,9 +381,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updatePostList(
-        value: String,
-        thana: String,
-        zilla: String
+        value: String, thana: String, zilla: String
     ) {
         if (value.isNotEmpty()) {
             _postList.value = addresses.filter { address ->
@@ -391,17 +395,16 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateVillageList(
-        value: String,
-        post: String,
-        thana: String,
-        zilla: String
+        value: String, post: String, thana: String, zilla: String
     ) {
         if (value.isNotEmpty()) {
             _villageList.value = addresses.filter { address ->
                 address.zilla.equals(zilla, ignoreCase = true) &&  // Match zilla name
                         address.thana.equals(thana, ignoreCase = true) &&  // Match thana name
-                        address.postOffice.equals(post, ignoreCase = true) &&
-                        address.village.contains(value, ignoreCase = true)
+                        address.postOffice.equals(
+                            post,
+                            ignoreCase = true
+                        ) && address.village.contains(value, ignoreCase = true)
             }.map { address -> address.postOffice }.distinct().take(5)
         } else {
             _villageList.value = emptyList()
@@ -532,7 +535,6 @@ class MainViewModel @Inject constructor(
                             insert(passportData)
                             newPassportData.fileName?.let { fileName ->
                                 _filePath.value = fileName
-                                Log.d("Afridi-Model", fileName)
                             }
                         }
                     })
@@ -574,6 +576,7 @@ class MainViewModel @Inject constructor(
     private fun clearPersonTwoFields() {
         updatePersonTwoName("")
         updatePersonTwoRelation("")
+        updatePersonTwoMobileNo("")
     }
 
     private fun insert(passportData: PassportData) {
@@ -582,17 +585,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getPassportData(enrollId: String) {
-        viewModelScope.launch {
-            val data = repository.getPassportData(enrollId)
-            // Handle the retrieved data
-        }
-    }
-
     fun getAllPassportData() {
         viewModelScope.launch {
-            val allData = repository.getAllPassportData()
-            // Handle the list of data
+            _filledFormList.value = repository.getAllPassportData()
         }
     }
 
@@ -607,27 +602,20 @@ class MainViewModel @Inject constructor(
         _father.value = ""
         _mother.value = ""
         _dob.value = ""
+        _applicantMobileNo.value = ""
         _occupation.value = ""
         _permanentAddress.value = ""
         _permanentPost.value = ""
         _permanentThana.value = ""
         _permanentZilla.value = ""
-        _presentAddress.value = ""
-        _presentPost.value = ""
-        _presentThana.value = ""
-        _presentZilla.value = ""
-        _applicantMobileNo.value = ""
-        _personOneName.value = ""
-        _personOneRelation.value = ""
-        _personOneMobileNo.value = ""
-        _personTwoName.value = ""
-        _personTwoRelation.value = ""
-        _personTwoMobileNo.value = ""
         _pickedDate.value = ""
         _pickedDateFieldName.value = ""
         _imageBitmap.value = null
         _filePath.value = ""
-        _isApplicationClicked.value = true
+        clearPresentAddressFields()
+        clearPersonOneFields()
+        clearPersonTwoFields()
+        clickedDropdownState("Application")
     }
 
     fun updateCheckData() {
@@ -658,13 +646,64 @@ class MainViewModel @Inject constructor(
         repository.openPdfFile(filePath)
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     fun sharePdfFile(filePath: String) {
         repository.sharePdfFile(filePath)
     }
 
+    private fun updateInvestigationsOfficerNameInDataStore(value: String) {
+        viewModelScope.launch {
+            repository.putStringInDataStore(Constants.KEY_INVESTIGATION_OFFICER_BN, value)
+        }
+    }
+
+    fun updateInvestigationsOfficerName(value: String) {
+        _investigationsOfficerName.value = value
+    }
+
+    private fun getInvestigationsOfficerNameFromDataStore() {
+        viewModelScope.launch {
+            repository.getStringFromDataStore(Constants.KEY_INVESTIGATION_OFFICER_BN).collect { value ->
+                // Update _investigationsOfficerName with non-null values
+                _investigationsOfficerName.value = value ?: "" // Set default empty string if null
+            }
+        }
+    }
+
+    private fun updateBranchNameInDataStore(value: String) {
+        viewModelScope.launch {
+            repository.putStringInDataStore(Constants.KEY_BRANCH_BN, value)
+        }
+    }
+
+    fun updateBranchName(value: String) {
+        _branchName.value = value
+    }
+
+    private fun getBranchNameFromDataStore() {
+        viewModelScope.launch {
+            repository.getStringFromDataStore(Constants.KEY_BRANCH_BN).collect { value ->
+                // Update _investigationsOfficerName with non-null values
+                _branchName.value = value ?: "" // Set default empty string if null
+            }
+        }
+    }
+
+    fun updateSettingData(name:String, branch:String) {
+        if(name.isNotEmpty() && branch.isNotEmpty()) {
+            updateInvestigationsOfficerNameInDataStore(name)
+            updateBranchNameInDataStore(branch)
+        }
+    }
+
+    private fun getSettingData() {
+        getInvestigationsOfficerNameFromDataStore()
+        getBranchNameFromDataStore()
+    }
+
+
     init {
         currentDate()
+        getSettingData()
     }
 
 }

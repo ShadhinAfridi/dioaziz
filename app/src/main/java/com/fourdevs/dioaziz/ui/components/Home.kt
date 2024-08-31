@@ -1,6 +1,7 @@
 package com.fourdevs.dioaziz.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,21 +63,18 @@ fun Home(navController: NavHostController, viewModel: MainViewModel) {
                     containerColor = Green80
                 )
             }
-            Row {
-                HomeCard(
-                    onClick = { /*TODO*/ },
-                    imageVector = Icons.Filled.Edit,
-                    text = Constants.KEY_EDIT_BN,
-                    modifier = Modifier.fillMaxWidth(0.5f),
-                    containerColor = Purple80
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 HomeCard(
                     onClick = {
                         navController.navigate(AppScreen.Settings.route)
                     },
                     imageVector = Icons.Filled.Settings,
                     text = Constants.KEY_SETTINGS_BN,
-                    modifier = Modifier.fillMaxWidth(1f),
+                    modifier = Modifier.fillMaxWidth(0.5f),
                     containerColor = Orange80
                 )
             }
