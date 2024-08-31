@@ -1,23 +1,17 @@
 package com.fourdevs.dioaziz.ui.core
 
-import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Typeface
-import android.graphics.drawable.Icon
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfRenderer
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.os.ParcelFileDescriptor
-import android.service.chooser.ChooserAction
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import com.fourdevs.dioaziz.R
@@ -40,8 +34,12 @@ class GeneratePDF @Inject constructor(
         newPassportData: (PassportData?) -> Unit,
         imageBitmap: (Bitmap?) -> Unit
     ) {
+        val toDay = customDate.convertTimestampToDate(System.currentTimeMillis())
+        val pdfFileName = "${passportData.enrollId}.pdf"
+        val pdfFileDir = "DioAziz/$toDay"
         // Open the PDF file from the raw resources
         val pdfFile = File(context.filesDir, "sample_pdf.pdf")
+
         context.resources.openRawResource(R.raw.passport_form).use { input ->
             pdfFile.outputStream().use { output ->
                 input.copyTo(output)
@@ -126,33 +124,41 @@ class GeneratePDF @Inject constructor(
                     size
                 )
             }
+
+            // Call imageBitmap after drawing text on the bitmap
             pdfDocument.finishPage(pdfPage)
-            if (i == 0) {
-                imageBitmap(bitmap)
-            }
+            imageBitmap(bitmap)
         }
 
 
         try {
             val directory = File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                "DioAziz/${customDate.convertTimestampToDate(System.currentTimeMillis())}"
+                pdfFileDir
             )
             // Create the directory if it doesn't exist
             if (!directory.exists()) {
                 directory.mkdirs()
             }
-            val file = File(directory, "${passportData.enrollId}.pdf")
+            val file = File(directory, pdfFileName)
 
             if (!file.exists()) {
                 pdfDocument.writeTo(FileOutputStream(file))
                 Toast.makeText(context, file.absolutePath, Toast.LENGTH_SHORT).show()
                 val newData = passportData.copy(
-                    fileName = file.absolutePath
+                    fileName = "$toDay/$pdfFileName"
                 )
                 newPassportData(newData)
             } else {
-                Toast.makeText(context, Constants.KEY_FILE_EXISTS + file.absolutePath, Toast.LENGTH_SHORT)
+                val newData = passportData.copy(
+                    fileName = "$toDay/$pdfFileName"
+                )
+                newPassportData(newData)
+                Toast.makeText(
+                    context,
+                    Constants.KEY_FILE_EXISTS + file.absolutePath,
+                    Toast.LENGTH_SHORT
+                )
                     .show()
             }
 
@@ -183,59 +189,59 @@ class GeneratePDF @Inject constructor(
         pdfPage.canvas.drawText(text, positionX * scale, positionY * scale, paint)
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+
     fun sendFile(pdfFile: File) {
-        val fileUri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.provider",
-            pdfFile
-        )
-
-        val sendIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "application/pdf"
-            putExtra(Intent.EXTRA_STREAM, fileUri) // Attach the PDF file
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        val shareIntent = Intent.createChooser(sendIntent, null)
-
-        val customActions = arrayOf(
-            ChooserAction.Builder(
-                Icon.createWithResource(context, R.drawable.ic_hourglass_bottom),
-                "Custom",
-                PendingIntent.getBroadcast(
-                    context,
-                    1,
-                    Intent(Intent.ACTION_VIEW),
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
-                )
-            ).build()
-        )
-
-        shareIntent.putExtra(Intent.EXTRA_CHOOSER_CUSTOM_ACTIONS, customActions)
-        context.startActivity(shareIntent)
-    }
-
-    @SuppressLint("QueryPermissionsNeeded")
-    fun openPdfFile(file: File) {
-        val uri: Uri =
-            FileProvider.getUriForFile(
+        try {
+            val fileUri = FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.provider",
-                file
+                pdfFile
             )
 
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/pdf")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_STREAM, fileUri) // URI of the file to share
+                type = "application/pdf" // MIME type of the file
+            }
 
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            Log.d(Constants.KEY_APP_NAME, Constants.KEY_LOG_MESSAGE)
+            // Create the chooser with the NEW_TASK flag if the context is not an Activity
+            val chooser = Intent.createChooser(shareIntent, "Share File via").apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            context.startActivity(chooser)
+
+        } catch (e: Exception) {
+            // Handle any exceptions that might occur
+            Log.e("FileSendError", "Failed to send the PDF file", e)
+            Toast.makeText(context, "Failed to send the file: ${e.message}", Toast.LENGTH_LONG)
+                .show()
         }
     }
 
+
+    fun openPdfFile(file: File) {
+        try {
+            val uri: Uri =
+                FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/pdf")
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+            } else {
+                // Handle the situation where no PDF viewer app is installed
+                Toast.makeText(context, "No application found to open PDF", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        } catch (e: Exception) {
+            // Handle any exceptions that might occur
+            Log.e("FileOpenError", "Failed to open the PDF file", e)
+            Toast.makeText(context, "Failed to open the file: ${e.message}", Toast.LENGTH_LONG)
+                .show()
+        }
+    }
 }
 

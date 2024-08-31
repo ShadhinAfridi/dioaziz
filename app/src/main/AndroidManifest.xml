@@ -41,6 +41,13 @@
         </provider>
     </application>
 
-
+    <queries>
+        <!-- If you need to open PDF files -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="application/pdf" />
+        </intent>
+    </queries>
 
 </manifest>

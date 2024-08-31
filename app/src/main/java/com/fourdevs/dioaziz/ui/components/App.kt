@@ -2,14 +2,10 @@ package com.fourdevs.dioaziz.ui.components
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,14 +27,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.fourdevs.dioaziz.R
 import com.fourdevs.dioaziz.ui.nav.AppScreen
 import com.fourdevs.dioaziz.ui.nav.mainNavGraph
 import com.fourdevs.dioaziz.utils.Constants
@@ -53,9 +47,6 @@ fun App(viewModel: MainViewModel) {
     var title by rememberSaveable { mutableStateOf("") }
     var destinationNow by rememberSaveable { mutableStateOf("back") }
     val content = LocalContext.current
-
-    viewModel.getPassportData(enrollId = "23")
-
 
     when (currentDestination?.route) {
         AppScreen.Home.route -> {
@@ -146,4 +137,3 @@ fun App(viewModel: MainViewModel) {
         }
     }
 }
-

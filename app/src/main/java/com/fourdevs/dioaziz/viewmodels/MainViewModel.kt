@@ -2,6 +2,7 @@ package com.fourdevs.dioaziz.viewmodels
 
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -532,6 +532,7 @@ class MainViewModel @Inject constructor(
                             insert(passportData)
                             newPassportData.fileName?.let { fileName ->
                                 _filePath.value = fileName
+                                Log.d("Afridi-Model", fileName)
                             }
                         }
                     })

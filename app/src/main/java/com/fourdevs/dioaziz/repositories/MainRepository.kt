@@ -2,6 +2,8 @@ package com.fourdevs.dioaziz.repositories
 
 import android.graphics.Bitmap
 import android.os.Build
+import android.os.Environment
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.fourdevs.dioaziz.room.ApplicantDao
 import com.fourdevs.dioaziz.ui.core.GeneratePDF
@@ -50,14 +52,24 @@ class MainRepository @Inject constructor(
         return customDate.convertEnglishToBanglaDigits(englishNumber)
     }
 
+    private fun getFile(filePath: String): File {
+        val directory = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "DioAziz"
+        )
+        val file = File(directory, filePath)
+        Log.d("Afridi-Repo", file.absolutePath)
+        return file
+    }
+
     fun openPdfFile(filePath: String) {
-        val file = File(filePath)
+        val file = getFile(filePath)
         generatePDF.openPdfFile(file)
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     fun sharePdfFile(filePath: String) {
-        val file = File(filePath)
+        val file = getFile(filePath)
         generatePDF.sendFile(file)
     }
 
