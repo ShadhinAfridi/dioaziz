@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,20 +20,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import com.fourdevs.dioaziz.R
 import com.fourdevs.dioaziz.ui.nav.AppScreen
 import com.fourdevs.dioaziz.ui.theme.Blue80
 import com.fourdevs.dioaziz.ui.theme.Green80
 import com.fourdevs.dioaziz.ui.theme.Orange80
-import com.fourdevs.dioaziz.ui.theme.Purple80
 import com.fourdevs.dioaziz.utils.Constants
-import com.fourdevs.dioaziz.viewmodels.MainViewModel
 
 @Composable
-fun Home(navController: NavHostController, viewModel: MainViewModel) {
+fun Home(navController: NavHostController) {
     var progress by rememberSaveable { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -80,9 +74,10 @@ fun Home(navController: NavHostController, viewModel: MainViewModel) {
             }
         }
 
-        if(progress) {
+        if (progress) {
             CustomProgressIndicator()
             LaunchedEffect(Unit) {
+                progress = false
                 navController.navigate(AppScreen.Application.route)
             }
         }

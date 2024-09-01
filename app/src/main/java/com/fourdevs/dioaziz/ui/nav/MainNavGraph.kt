@@ -24,16 +24,16 @@ fun NavGraphBuilder.mainNavGraph(
     ) {
         // Define composable destinations as children of MainNav
         composable(AppScreen.Home.route) {
-            Home(navController, viewModel)
+            Home(navController)
         }
         composable(AppScreen.Application.route) {
             PassportForm(navController, viewModel)
         }
         composable(AppScreen.History.route) {
-            History(navController, viewModel)
+            History(viewModel)
         }
         composable(AppScreen.Settings.route) {
-            Settings(navController, viewModel)
+            Settings(viewModel)
         }
         composable(AppScreen.Share.route) {
             ShareScreen(navController, viewModel)

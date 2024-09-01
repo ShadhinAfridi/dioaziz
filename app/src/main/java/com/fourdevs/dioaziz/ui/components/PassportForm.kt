@@ -15,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,6 +31,7 @@ import com.fourdevs.dioaziz.viewmodels.MainViewModel
 @SuppressLint("RememberReturnType")
 @Composable
 fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
+
     val localFocusManager = LocalFocusManager.current
     val context = LocalContext.current
 
@@ -43,7 +47,8 @@ fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
     val permanentZilla by viewModel.permanentZilla.collectAsState("")
     val father by viewModel.father.collectAsState("")
     val mother by viewModel.mother.collectAsState("")
-    val filePath by viewModel.filePath.collectAsState()
+
+    var isClicked by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(
         addressChecked,
@@ -69,8 +74,10 @@ fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
         viewModel.updateError(false)
     }
 
-    if(filePath.isNotEmpty()) {
-        LaunchedEffect(filePath) {
+
+    LaunchedEffect(isClicked) {
+        if(isClicked) {
+            isClicked = false
             navController.navigate(AppScreen.Share.route)
         }
     }
@@ -122,6 +129,7 @@ fun PassportForm(navController: NavHostController, viewModel: MainViewModel) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
+            isClicked = true
             viewModel.savePassportData()
         }
     }

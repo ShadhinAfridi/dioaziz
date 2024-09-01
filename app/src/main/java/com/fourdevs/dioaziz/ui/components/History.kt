@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.fourdevs.dioaziz.R
 import com.fourdevs.dioaziz.ui.theme.Green80
 import com.fourdevs.dioaziz.ui.theme.Purple40
@@ -33,7 +32,7 @@ import com.fourdevs.dioaziz.viewmodels.MainViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun History(navController: NavHostController, viewModel: MainViewModel) {
+fun History(viewModel: MainViewModel) {
     val filledFormList by viewModel.filledFormList.collectAsState()
 
     LaunchedEffect(Unit) {

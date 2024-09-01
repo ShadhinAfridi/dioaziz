@@ -1,9 +1,7 @@
 package com.fourdevs.dioaziz.repositories
 
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Environment
-import androidx.annotation.RequiresApi
 import com.fourdevs.dioaziz.room.ApplicantDao
 import com.fourdevs.dioaziz.ui.core.GeneratePDF
 import com.fourdevs.dioaziz.ui.data.DataStoreManager
@@ -76,12 +74,6 @@ class MainRepository @Inject constructor(
     suspend fun insert(passportData: PassportData) {
         withContext(Dispatchers.IO) {
             applicantDao.insertAll(passportData)
-        }
-    }
-
-    suspend fun getPassportData(enrollId: String): PassportData? {
-        return withContext(Dispatchers.IO) {
-            applicantDao.getPassportData(enrollId)
         }
     }
 

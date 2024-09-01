@@ -1,8 +1,5 @@
 package com.fourdevs.dioaziz.ui.components
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,14 +31,12 @@ import com.fourdevs.dioaziz.utils.Constants
 import com.fourdevs.dioaziz.viewmodels.MainViewModel
 
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun ShareScreen(navController: NavHostController, viewModel: MainViewModel) {
 
     val filePath by viewModel.filePath.collectAsState()
     val imageBitmap by viewModel.imageBitmap.collectAsState()
 
-    Log.d("Afridi-Screen", filePath)
 
     Column(
         verticalArrangement = Arrangement.Top,
