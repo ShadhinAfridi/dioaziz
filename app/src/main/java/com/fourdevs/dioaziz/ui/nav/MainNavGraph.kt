@@ -1,6 +1,5 @@
 package com.fourdevs.dioaziz.ui.nav
 
-import android.annotation.SuppressLint
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -12,7 +11,7 @@ import com.fourdevs.dioaziz.ui.components.Settings
 import com.fourdevs.dioaziz.ui.components.ShareScreen
 import com.fourdevs.dioaziz.viewmodels.MainViewModel
 
-@SuppressLint("ComposableNavGraphInComposeScope")
+
 fun NavGraphBuilder.mainNavGraph(
     navController: NavHostController,
     viewModel: MainViewModel

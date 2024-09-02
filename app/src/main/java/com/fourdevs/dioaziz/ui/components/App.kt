@@ -46,7 +46,7 @@ fun App(viewModel: MainViewModel) {
     val currentDestination = navBackStackEntry?.destination
     var title by rememberSaveable { mutableStateOf("") }
     var destinationNow by rememberSaveable { mutableStateOf("back") }
-    val content = LocalContext.current
+    val context = LocalContext.current
 
     when (currentDestination?.route) {
         AppScreen.Home.route -> {
@@ -95,7 +95,7 @@ fun App(viewModel: MainViewModel) {
             IconButton(
                 onClick = {
                     if (destinationNow == AppScreen.Home.route) {
-                        Toast.makeText(content, Constants.KEY_HOME_BN, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, Constants.KEY_HOME_BN, Toast.LENGTH_SHORT).show()
                     } else {
                         navController.navigate(AppScreen.MainNav.route) {
                             popUpTo(AppScreen.MainNav.route) { inclusive = true }
